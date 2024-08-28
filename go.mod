@@ -1,6 +1,8 @@
 module github.com/openyurtio/openyurt
 
-go 1.20
+go 1.21
+
+toolchain go1.21.5
 
 require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.156
@@ -170,6 +172,7 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/cloud-provider v0.28.9 // indirect
+	k8s.io/klog v1.0.0
 	k8s.io/kms v0.28.9 // indirect
 	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.1.2 // indirect
