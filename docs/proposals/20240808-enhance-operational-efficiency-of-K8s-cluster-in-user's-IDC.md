@@ -1,41 +1,26 @@
----
-title: Enhance operational efficiency of K8s cluster in user's IDC
-authors:
-  - "@huangchenzhao"
-reviewers:
-  - "@rambohe-ch"
-creation-date: 2024-08-08
-last-updated: 2024-08-14
-status: provisional
----
+# 黄晨钊 (huangchenzhao)-245fc0132-final report
 
-# Enhance operational efficiency of K8s cluster in user's IDC
+## Project Information
+- Project Name：Enhance operational efficiency of K8s cluster in user's IDC
+- Scheme Description：It is difficult for users to operate, manage and upgrade the K8s cluster in their own IDC (Internet Data Center). The project aims to enhance the operational efficiency of K8s cluster in user's IDC by adopting KOK (Kubernetes-On-Kubernetes) architecture, where there are host-K8s and tenant-K8s. Host-K8s is located at cloud, provided by cloud service providers and can manage control plane of tenant-K8s in IDC.
+For K8s clutesrs in user's IDC, it is difficult to operate, manage and upgrade the control plane components. Users typically adopt the following three solutions to manage K8s clusters in their IDC. 
 
-## Table of Contents
+  - Some users only set up a single K8s cluster in IDC for tenant. In this case, when K8s have version upgrades and changes, about three major releases per year, users will suffer from complex operations to upgrade those components. Meanwhile, there is no resource elasticity capability in K8s clutesrs in user's IDC, such as scaling control plane components, which is a costly operation for user.
 
-- [Enhance operational efficiency of K8s cluster in user's IDC](#enhance-operational-efficiency-of-K8s-cluster-in-user's-IDC)
-  - [Table of Contents](#table-of-contents)
-  - [Glossary](#glossary)
-  - [Summary](#summary)
-  - [Motivation](#motivation)
-    - [Goals](#goals)
-    - [Non-Goals/Future Work](#non-goalsfuture-work)
-  - [Proposal](#proposal)
-    - [Overview](#overview)
-    - [Architecture](#architecture)
-    - [User stories](#user-stories)
-      - [Comparison](#comparison)
+  - Some users adopt the KOK architecture in their own IDC to manages tenant-K8s's control plane components. Both host-K8s and tenant-K8s are in user's IDC. In this case, operating and updating control plane components of tenant-K8s will be easy, however, it is still hard to operate and upgrade the control plane components in host-K8s.
 
-## Glossary
+  - More and more users only access their IDC machines to cloud service providers as worker nodes, utilizing the abilities of cloud-edge collaboration provided by OpenYurt. But there are some users needs continuous deployment for offline tasks, depending on strong stability of cloud-edge communication, in this case, they tend to maintain a K8s cluster in their IDC.
 
-Refer to the [OpenYurt Glossary](https://github.com/openyurtio/openyurt/blob/master/docs/proposals/00_openyurt-glossary.md)
+We conclude above three solutions in Fig.1. The first and the second solution both face the challenge of operating and upgrading the control plane components, the difference is that the former is difficult to manage the control plane of K8s cluster in IDC, while the latter is difficult to manage the control plane of host-K8s. The third solution is the most popular, users adopt the abilities of cloud-edge collaboration afforded by OpenYurt, easily achieve large-scale application operation, and management on massive edge resources, however, some users prefer to maintain a K8s in their IDC for their needs.
+![img.png](../img/enhance-efficiency-of-K8s-cluster-in-user's-IDC/fig1.png)
+
+This proposal solves the pain points mentioned above, which automates the operation and maintenance of control plane components of tenant-K8s to replace manual user operations, and affords users who needs continuous deployment for offline tasks a efficient operation scheme to manage their IDC K8s cluster.
+
+- Time Planning：
 
 
-## Summary
+## Project Schedule
 
-It is difficult for users to operate, manage and upgrade the K8s cluster in their own IDC (Internet Data Center). The proposal aims to enhance the operational efficiency of K8s cluster in user's IDC by adopting KOK (Kubernetes-On-Kubernetes) architecture, where there are host-K8s and tenant-K8s. Host-K8s is located at cloud, provided by cloud service providers and can manage control plane of tenant-K8s in IDC.
-
-## Motivation
 
 For K8s clutesrs in user's IDC, it is difficult to operate, manage and upgrade the control plane components. Users typically adopt the following three solutions to manage K8s clusters in their IDC. 
 
