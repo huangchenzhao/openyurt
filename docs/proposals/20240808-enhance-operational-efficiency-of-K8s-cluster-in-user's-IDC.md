@@ -18,6 +18,9 @@
   This project solves the pain points mentioned above, which automates the operation and maintenance of control plane components of tenant-K8s to replace manual user operations, and affords users who needs continuous deployment for offline tasks a efficient operation scheme to manage their IDC K8s cluster.
 
 - Time Planning：
+  - 2024.07: Thorough discussion with mentor to determine the direction and design of the topic.
+  - 2024.08: Submitting design documents and reading openyurt source code.
+  - 2024.09: Functional code development, and corresponding unit and e2e testing.
 
 
 ## Project Schedule
@@ -45,7 +48,8 @@
   `local` mode YurtHub gets pod's ip in host-K8s's apiserver, and maintains the loadbalance rule to afford load balancing access to APIServer-pods.
 
 - Problem and Solution：
-  - Hard to 
+  - Problem: The yurthub source code is cumbersome, and a reasonable architecture needs to be designed to be compatible with the original code.
+  - Solution: Fully read the source code and discussions with the instructor to figure out the program design.
 
 
 - Subsequent Work Arrangement：
