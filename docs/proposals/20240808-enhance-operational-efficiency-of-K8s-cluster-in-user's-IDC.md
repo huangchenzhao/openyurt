@@ -49,11 +49,10 @@
 
 - Problem and Solution：
   - Problem: The yurthub source code is cumbersome, and a reasonable architecture needs to be designed to be compatible with the original code.
+  
   - Solution: Fully read the source code and discussions with the instructor to figure out the program design.
 
 
 - Subsequent Work Arrangement：
-
-  - The project is not intended to replace the cloud-edge architecture of OpenYurt, it affords a new scheme for users who needs continuous deployment for offline tasks.
 
   - In future, we plan to afford the admin node for users to use tools like kubectl to access and operate tenant-K8s.
