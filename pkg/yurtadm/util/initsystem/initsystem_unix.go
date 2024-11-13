@@ -52,6 +52,10 @@ func (openrc OpenRCInitSystem) ServiceIsActive(service string) bool {
 	return !strings.Contains(outStr, "stopped") && !strings.Contains(outStr, "does not exist")
 }
 
+func (openrc OpenRCInitSystem) ServiceStart(service string) error {
+	return fmt.Errorf("start service failed")
+}
+
 // SystemdInitSystem defines systemd
 type SystemdInitSystem struct{}
 
@@ -92,6 +96,12 @@ func (sysd SystemdInitSystem) ServiceIsActive(service string) bool {
 		return true
 	}
 	return false
+}
+
+// ServiceStart tries to start a specific service
+func (sysd SystemdInitSystem) ServiceStart(service string) error {
+	args := []string{"start", service}
+	return exec.Command("systemctl", args...).Run()
 }
 
 // GetInitSystem returns an InitSystem for the current system, or nil
