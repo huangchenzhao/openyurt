@@ -486,7 +486,8 @@ func SetDiscoveryConfig(data joindata.YurtJoinData) error {
 // RetrieveBootstrapConfig get clientcmdapi config by bootstrap token
 func RetrieveBootstrapConfig(data joindata.YurtJoinData) (*clientcmdapi.Config, error) {
 	cfg, err := token.RetrieveValidatedConfigInfo(nil, &token.BootstrapData{
-		ServerAddr:   data.ServerAddr(),
+		// ServerAddr:   data.ServerAddr(),
+		ServerAddr:   data.TenantApiServerEndpoints(),
 		JoinToken:    data.JoinToken(),
 		CaCertHashes: data.CaCertHashes(),
 	})
@@ -497,7 +498,8 @@ func RetrieveBootstrapConfig(data joindata.YurtJoinData) (*clientcmdapi.Config, 
 	clusterinfo := kubeconfigutil.GetClusterFromKubeConfig(cfg)
 	return kubeconfigutil.CreateWithToken(
 		// If there are multiple master IP addresses, take the first one here
-		fmt.Sprintf("https://%s", strings.Split(data.ServerAddr(), ",")[0]),
+		// fmt.Sprintf("https://%s", strings.Split(data.ServerAddr(), ",")[0]),
+		fmt.Sprintf("https://%s", strings.Split(data.TenantApiServerEndpoints(), ",")[0]),
 		"kubernetes",
 		TokenUser,
 		clusterinfo.CertificateAuthorityData,
