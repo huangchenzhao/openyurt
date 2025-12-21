@@ -1,0 +1,11 @@
+=======================================
+TenantCluster 功能测试报告
+=======================================
+开始时间: Sun 21 Dec 2025 09:40:00 AM UTC
+集群名称: tenantcluster-test
+命名空间: openyurt-system
+测试超时: 600秒
+=======================================
+
+[0;31m[ERROR][0m TenantCluster CRD 未安装
+[0;34m[INFO][0m 跳过资源清理 (CLEANUP_ON_EXIT=false)

@@ -1,0 +1,66 @@
+# 示例 TenantCluster Custom Resource
+# 此文件创建一个租户 Kubernetes 集群，其控制平面组件运行在主机集群上
+#
+# 使用前请确保：
+# 1. 已运行 setup-test-env.sh 准备环境
+# 2. 已部署 TenantCluster CRD 和 operator
+# 3. hostControlPlaneAddr 已更新为正确的 IP 地址
+
+apiVersion: apps.openyurt.io/v1alpha1
+kind: TenantCluster
+metadata:
+  name: my-tenant
+spec:
+  # 必需: 租户集群的 Kubernetes 版本
+  kubernetesVersion: "v1.32.0"
+  
+  # 必需: 租户 APIServer 服务的 ClusterIP
+  # 必须在主机集群的 service-cluster-ip-range 内且未被使用
+  apiServerServiceIP: "10.96.100.1"
+  
+  # 必需: APIServer 外部访问的 NodePort (30000-32767)
+  apiServerNodePort: 31000
+  
+  # 必需: 主机集群 API 服务器地址，可从租户节点访问
+  # 注意: 需要根据实际的 kind 集群 IP 地址进行更新
+  # 可以通过以下命令获取: docker inspect tenantcluster-test-control-plane | grep IPAddress
+  hostControlPlaneAddr: "172.18.0.2:6443"
+  
+  # 必需: 包含主机集群 CA 证书和密钥的 secret 引用
+  # secret 应包含 'ca.crt' 和 'ca.key' 键
+  hostCASecretRef:
+    name: host-k8s-ca
+    namespace: kube-system
+  
+  # 可选: etcd 副本数 (默认: 3)
+  etcdReplicas: 3
+  
+  # 可选: controller-manager 副本数 (默认: 2)
+  controllerManagerReplicas: 2
+  
+  # 可选: scheduler 副本数 (默认: 2)
+  schedulerReplicas: 2
+  
+  # 可选: kube 组件的镜像仓库
+  # imageRepository: "registry.aliyuncs.com/google_containers"
+  
+  # 可选: etcd 镜像仓库
+  # etcdImageRepository: "quay.io/coreos"
+  
+  # 可选: etcd 版本
+  # etcdVersion: "v3.6.0"
+  
+  # 可选: 租户集群的服务集群 IP 范围
+  # serviceClusterIPRange: "10.96.0.0/12"
+  
+  # 可选: 租户集群的 Pod CIDR
+  # podCIDR: "10.244.0.0/16"
+  
+  # 可选: etcd PVC 的存储类
+  etcdStorageClass: "local-path"
+  
+  # 可选: etcd PVC 的存储大小
+  etcdStorageSize: "1Gi"
+  
+  # 可选: 暂停协调 (默认: false)
+  # paused: false
