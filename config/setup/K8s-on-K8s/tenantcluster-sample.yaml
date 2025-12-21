@@ -1,0 +1,67 @@
+# Example TenantCluster Custom Resource
+# This creates a tenant Kubernetes cluster with control plane components running on the host cluster
+apiVersion: apps.openyurt.io/v1alpha1
+kind: TenantCluster
+metadata:
+  name: my-tenant
+spec:
+  # Required: Kubernetes version for the tenant cluster
+  kubernetesVersion: "v1.32.0"
+  
+  # Required: ClusterIP for the tenant APIServer service
+  # Must be within the host cluster's service-cluster-ip-range and not already in use
+  apiServerServiceIP: "10.96.100.1"
+  
+  # Required: NodePort for external access to APIServer (30000-32767)
+  apiServerNodePort: 31000
+  
+  # Required: Address of the host cluster's API server, accessible from tenant nodes
+  hostControlPlaneAddr: "192.168.24.180:6443"
+  
+  # Required: Reference to secret containing host cluster's CA certificate and key
+  # The secret should contain 'ca.crt' and 'ca.key' keys
+  hostCASecretRef:
+    name: host-k8s-ca
+    namespace: kube-system
+  
+  # Optional: Number of etcd replicas (default: 3)
+  etcdReplicas: 3
+  
+  # Optional: Number of controller-manager replicas (default: 2)
+  controllerManagerReplicas: 2
+  
+  # Optional: Number of scheduler replicas (default: 2)
+  schedulerReplicas: 2
+  
+  # Optional: Image repository for kube components
+  # imageRepository: "registry.aliyuncs.com/google_containers"
+  
+  # Optional: etcd image repository
+  # etcdImageRepository: "quay.io/coreos"
+  
+  # Optional: etcd version
+  # etcdVersion: "v3.6.0"
+  
+  # Optional: Service cluster IP range for tenant cluster
+  # serviceClusterIPRange: "10.96.0.0/12"
+  
+  # Optional: Pod CIDR for tenant cluster
+  # podCIDR: "10.244.0.0/16"
+  
+  # Optional: Storage class for etcd PVCs
+  # etcdStorageClass: "local-path"
+  
+  # Optional: Storage size for etcd PVCs
+  # etcdStorageSize: "1Gi"
+  
+  # Optional: Pause reconciliation (default: false)
+  # paused: false
+---
+# First, create the host CA secret in kube-system namespace
+# This should contain the host cluster's CA certificate and key
+# Run this on the host cluster before creating the TenantCluster:
+#
+# kubectl create secret generic host-k8s-ca \
+#   -n kube-system \
+#   --from-file=ca.crt=/etc/kubernetes/pki/ca.crt \
+#   --from-file=ca.key=/etc/kubernetes/pki/ca.key

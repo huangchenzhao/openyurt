@@ -39,6 +39,7 @@ import (
 	yurtappsetconfig "github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtappset/config"
 	podbindingconfig "github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtcoordinator/podbinding/config"
 	yurtstaticsetconfig "github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtstaticset/config"
+	tenantclusterconfig "github.com/openyurtio/openyurt/pkg/yurtmanager/controller/tenantcluster/config"
 )
 
 // YurtManagerConfiguration contains elements describing yurt-manager.
@@ -102,6 +103,9 @@ type YurtManagerConfiguration struct {
 
 	// HubLeaderRBACController holds configuration for HubLeaderRBAC related features.
 	HubLeaderRBACController hubleaderrbacconfig.HubLeaderRBACControllerConfiguration
+
+	// TenantClusterController holds configuration for TenantClusterController related features.
+	TenantClusterController tenantclusterconfig.TenantClusterControllerConfiguration
 }
 
 type GenericConfiguration struct {

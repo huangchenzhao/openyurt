@@ -41,6 +41,7 @@ import (
 	webhookcontroller "github.com/openyurtio/openyurt/pkg/yurtmanager/webhook/util/controller"
 	v1beta1yurtappset "github.com/openyurtio/openyurt/pkg/yurtmanager/webhook/yurtappset/v1beta1"
 	v1alpha1yurtstaticset "github.com/openyurtio/openyurt/pkg/yurtmanager/webhook/yurtstaticset/v1alpha1"
+	v1alpha1tenantcluster "github.com/openyurtio/openyurt/pkg/yurtmanager/webhook/tenantcluster/v1alpha1"
 )
 
 type SetupWebhookWithManager interface {
@@ -75,6 +76,7 @@ func init() {
 	addControllerWebhook(names.YurtAppSetController, &v1beta1yurtappset.YurtAppSetHandler{})
 	//addControllerWebhook(names.PlatformAdminController, &v1alpha2platformadmin.PlatformAdminHandler{})
 	addControllerWebhook(names.PlatformAdminController, &v1beta1platformadmin.PlatformAdminHandler{})
+	addControllerWebhook(names.TenantClusterController, &v1alpha1tenantcluster.TenantClusterHandler{})
 
 	independentWebhooks[v1node.WebhookName] = &v1node.NodeHandler{}
 	independentWebhooks[v1alpha1pod.WebhookName] = &v1alpha1pod.PodHandler{}

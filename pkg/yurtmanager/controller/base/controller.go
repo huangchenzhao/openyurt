@@ -49,6 +49,7 @@ import (
 	"github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtappset"
 	"github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtcoordinator/podbinding"
 	"github.com/openyurtio/openyurt/pkg/yurtmanager/controller/yurtstaticset"
+	"github.com/openyurtio/openyurt/pkg/yurtmanager/controller/tenantcluster"
 )
 
 type InitFunc func(context.Context, *config.CompletedConfig, manager.Manager) error
@@ -97,6 +98,7 @@ func NewControllerInitializers() map[string]InitFunc {
 	register(names.HubLeaderController, hubleader.Add)
 	register(names.HubLeaderConfigController, hubleaderconfig.Add)
 	register(names.HubLeaderRBACController, hubleaderrbac.Add)
+	register(names.TenantClusterController, tenantcluster.Add)
 
 	return controllers
 }

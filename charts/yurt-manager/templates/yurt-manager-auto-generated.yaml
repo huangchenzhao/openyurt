@@ -111,6 +111,12 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  name: yurt-manager-tenantcluster-controller
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
   name: yurt-manager-yurt-app-set-controller
   namespace: {{ .Release.Namespace }}
 ---
@@ -766,6 +772,79 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  name: yurt-manager-tenantcluster-controller
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - namespaces
+  - secrets
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - statefulsets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.openyurt.io
+  resources:
+  - tenantclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.openyurt.io
+  resources:
+  - tenantclusters/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps.openyurt.io
+  resources:
+  - tenantclusters/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
   name: yurt-manager-webhook
 rules:
 - apiGroups:
@@ -1121,6 +1200,19 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  name: yurt-manager-tenantcluster-controller-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: yurt-manager-tenantcluster-controller
+subjects:
+- kind: ServiceAccount
+  name: yurt-manager-tenantcluster-controller
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
   name: yurt-manager-yurt-app-set-controller-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1275,6 +1367,27 @@ webhooks:
     service:
       name: yurt-manager-webhook-service
       namespace: {{ .Release.Namespace }}
+      path: /mutate-apps-openyurt-io-v1alpha1-tenantcluster
+  failurePolicy: Fail
+  name: m.v1alpha1.tenantcluster.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - tenantclusters
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: {{ .Release.Namespace }}
       path: /mutate-apps-openyurt-io-v1beta1-yurtappset
   failurePolicy: Fail
   name: myurtappset.kb.io
@@ -1397,6 +1510,28 @@ webhooks:
     - DELETE
     resources:
     - nodepools
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: yurt-manager-webhook-service
+      namespace: {{ .Release.Namespace }}
+      path: /validate-apps-openyurt-io-v1alpha1-tenantcluster
+  failurePolicy: Fail
+  name: v.v1alpha1.tenantcluster.kb.io
+  rules:
+  - apiGroups:
+    - apps.openyurt.io
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    - DELETE
+    resources:
+    - tenantclusters
   sideEffects: None
 - admissionReviewVersions:
   - v1

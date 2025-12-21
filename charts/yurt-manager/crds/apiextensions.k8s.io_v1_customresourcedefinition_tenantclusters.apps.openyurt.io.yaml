@@ -1,0 +1,374 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.16.5
+  name: tenantclusters.apps.openyurt.io
+spec:
+  group: apps.openyurt.io
+  names:
+    categories:
+    - yurt
+    kind: TenantCluster
+    listKind: TenantClusterList
+    plural: tenantclusters
+    shortNames:
+    - tc
+    singular: tenantcluster
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - description: Kubernetes version
+      jsonPath: .spec.kubernetesVersion
+      name: Version
+      type: string
+    - description: Cluster phase
+      jsonPath: .status.phase
+      name: Phase
+      type: string
+    - description: API server endpoint
+      jsonPath: .status.apiServerEndpoint
+      name: APIServer
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          TenantCluster is the Schema for the tenantclusters API.
+          It represents a tenant Kubernetes cluster whose control plane runs on the host cluster.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TenantClusterSpec defines the desired state of TenantCluster
+            properties:
+              apiServerNodePort:
+                description: APIServerNodePort is the NodePort for external access
+                  to APIServer
+                format: int32
+                maximum: 32767
+                minimum: 30000
+                type: integer
+              apiServerServiceIP:
+                description: |-
+                  APIServerServiceIP is the ClusterIP for the tenant APIServer service
+                  Must be within the host cluster's service-cluster-ip-range
+                pattern: ^(\d{1,3}\.){3}\d{1,3}$
+                type: string
+              controllerManagerReplicas:
+                default: 2
+                description: ControllerManagerReplicas specifies replicas for controller-manager
+                format: int32
+                minimum: 1
+                type: integer
+              etcdImageRepository:
+                default: quay.io/coreos
+                description: EtcdImageRepository for etcd image
+                type: string
+              etcdReplicas:
+                default: 3
+                description: EtcdReplicas specifies the number of etcd replicas
+                format: int32
+                maximum: 7
+                minimum: 1
+                type: integer
+              etcdStorageClass:
+                default: local-path
+                description: EtcdStorageClass specifies the storage class for etcd
+                  PVCs
+                type: string
+              etcdStorageSize:
+                default: 1Gi
+                description: EtcdStorageSize specifies the storage size for etcd PVCs
+                type: string
+              etcdVersion:
+                default: v3.6.0
+                description: EtcdVersion specifies the version of etcd
+                type: string
+              hostCASecretRef:
+                description: |-
+                  HostCASecretRef references a secret containing the host cluster's CA certificate and key
+                  The secret should contain 'ca.crt' and 'ca.key' keys
+                properties:
+                  name:
+                    description: Name is the name of the secret
+                    type: string
+                  namespace:
+                    description: Namespace is the namespace of the secret
+                    type: string
+                required:
+                - name
+                type: object
+              hostControlPlaneAddr:
+                description: |-
+                  HostControlPlaneAddr is the address of the host cluster's API server
+                  Accessible from tenant nodes for yurtadm join
+                  Example: "192.168.24.180:6443"
+                type: string
+              imageRepository:
+                default: registry.aliyuncs.com/google_containers
+                description: ImageRepository for kube components
+                type: string
+              kubernetesVersion:
+                description: |-
+                  KubernetesVersion specifies the version of Kubernetes for the tenant cluster
+                  Example: "v1.32.0"
+                pattern: ^v\d+\.\d+\.\d+$
+                type: string
+              paused:
+                description: Paused prevents any changes to the tenant cluster when
+                  set to true
+                type: boolean
+              podCIDR:
+                default: 10.244.0.0/16
+                description: PodCIDR for tenant cluster pods
+                type: string
+              schedulerReplicas:
+                default: 2
+                description: SchedulerReplicas specifies replicas for scheduler
+                format: int32
+                minimum: 1
+                type: integer
+              serviceClusterIPRange:
+                default: 10.96.0.0/12
+                description: ServiceClusterIPRange for tenant cluster services
+                type: string
+            required:
+            - apiServerNodePort
+            - apiServerServiceIP
+            - hostCASecretRef
+            - hostControlPlaneAddr
+            - kubernetesVersion
+            type: object
+          status:
+            description: TenantClusterStatus defines the observed state of TenantCluster
+            properties:
+              adminKubeconfigSecret:
+                description: AdminKubeconfigSecret is the name of the secret containing
+                  admin kubeconfig
+                type: string
+              apiServerEndpoint:
+                description: APIServerEndpoint is the internal ClusterIP endpoint
+                  for the tenant API server
+                type: string
+              bootstrapToken:
+                description: 'BootstrapToken for node joining (format: token-id.token-secret)'
+                type: string
+              bootstrapTokenExpiration:
+                description: BootstrapTokenExpiration is the expiration time of the
+                  bootstrap token
+                format: date-time
+                type: string
+              componentStatuses:
+                description: ComponentStatuses tracks the status of each control plane
+                  component
+                properties:
+                  apiServer:
+                    description: APIServer status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                  controllerManager:
+                    description: ControllerManager status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                  etcd:
+                    description: Etcd status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                  pki:
+                    description: PKI status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                  postInstall:
+                    description: PostInstall status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                  scheduler:
+                    description: Scheduler status
+                    properties:
+                      lastTransitionTime:
+                        description: LastTransitionTime is the last time the status
+                          changed
+                        format: date-time
+                        type: string
+                      message:
+                        description: Message provides additional information about
+                          the component status
+                        type: string
+                      ready:
+                        description: Ready indicates whether the component is ready
+                        type: boolean
+                    required:
+                    - ready
+                    type: object
+                type: object
+              conditions:
+                description: Conditions represent the latest available observations
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+              externalAPIServerEndpoint:
+                description: ExternalAPIServerEndpoint is the external NodePort endpoint
+                type: string
+              joinCommand:
+                description: JoinCommand provides the yurtadm join command for adding
+                  nodes
+                type: string
+              namespace:
+                description: Namespace is the namespace where tenant control plane
+                  components are deployed
+                type: string
+              observedGeneration:
+                description: ObservedGeneration is the generation observed by the
+                  controller
+                format: int64
+                type: integer
+              phase:
+                description: Phase represents the current phase of the tenant cluster
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
